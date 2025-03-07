@@ -2,8 +2,8 @@ import pytest
 import allure
 from constants import URLs, TestUserData
 from pages.login_page import LoginPage
+from pages.main_page import MainPage
 from pages.password_recovery_page import PasswordRecoveryPage
-from locators.password_recovery_page_locators import PasswordRecoveryPageLocators
 
 
 @pytest.mark.usefixtures("driver")
@@ -14,10 +14,17 @@ class TestPasswordRecovery:
     @allure.title("Переход на страницу восстановления пароля по кнопке 'Восстановить пароль'")
     def test_navigate_to_password_recovery(self, driver):
         """Тест: Переход на страницу восстановления пароля по кнопке 'Восстановить пароль'."""
-        driver.get(URLs.BASE_URL)
+        main_page = MainPage(driver)
+
+        with allure.step("Открываем главную страницу"):
+            main_page.open_main_page()
+
+        with allure.step("Переход на страницу 'Личный кабинет'"):
+            main_page.go_to_login_page()
 
         with allure.step("Переход на страницу 'Восстановление пароля'"):
-            LoginPage(driver).go_to_password_recovery()
+            login_page = LoginPage(driver)
+            login_page.go_to_password_recovery()
 
         recovery_page = PasswordRecoveryPage(driver)
 
@@ -31,10 +38,17 @@ class TestPasswordRecovery:
     @allure.title("Ввод почты и клик по кнопке 'Восстановить'")
     def test_enter_email_and_submit_recovery(self, driver):
         """Тест: Ввод почты и клик по кнопке 'Восстановить'."""
-        driver.get(URLs.BASE_URL)
+        main_page = MainPage(driver)
+
+        with allure.step("Открываем главную страницу"):
+            main_page.open_main_page()
+
+        with allure.step("Переход на страницу 'Личный кабинет'"):
+            main_page.go_to_login_page()
 
         with allure.step("Переход на страницу 'Восстановление пароля'"):
-            LoginPage(driver).go_to_password_recovery()
+            login_page = LoginPage(driver)
+            login_page.go_to_password_recovery()
 
         recovery_page = PasswordRecoveryPage(driver)
 
@@ -52,10 +66,17 @@ class TestPasswordRecovery:
     @allure.title("Клик по кнопке 'Показать/скрыть пароль' делает поле активным")
     def test_toggle_password_visibility_activates_field(self, driver):
         """Тест: Клик по кнопке 'Показать/скрыть пароль' делает поле активным."""
-        driver.get(URLs.BASE_URL)
+        main_page = MainPage(driver)
+
+        with allure.step("Открываем главную страницу"):
+            main_page.open_main_page()
+
+        with allure.step("Переход на страницу 'Личный кабинет'"):
+            main_page.go_to_login_page()
 
         with allure.step("Переход на страницу 'Восстановление пароля'"):
-            LoginPage(driver).go_to_password_recovery()
+            login_page = LoginPage(driver)
+            login_page.go_to_password_recovery()
 
         recovery_page = PasswordRecoveryPage(driver)
 
@@ -67,6 +88,4 @@ class TestPasswordRecovery:
             recovery_page.toggle_password_visibility()
 
         with allure.step("Проверяем, что поле пароля стало активным"):
-            assert recovery_page.wait_for_element(PasswordRecoveryPageLocators.PASSWORD_INPUT_ACTIVE).is_displayed(), (
-                "Поле пароля не стало активным после нажатия кнопки 'Показать/скрыть пароль'"
-            )
+            assert recovery_page.is_password_input_active(), "Поле пароля не стало активным после нажатия кнопки 'Показать/скрыть пароль'"

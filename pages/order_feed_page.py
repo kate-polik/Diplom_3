@@ -1,3 +1,4 @@
+from constants import URLs
 from pages.base_page import BasePage
 from locators.order_feed_locators import OrderFeedLocators
 
@@ -8,10 +9,6 @@ class OrderFeedPage(BasePage):
     def is_order_feed_header_visible(self):
         """Проверяет, отображается ли заголовок 'Лента заказов'"""
         return self.is_element_visible(OrderFeedLocators.ORDER_FEED_HEADER)
-
-    def click_on_first_order(self):
-        """Кликает на первый заказ в ленте заказов"""
-        self.click(OrderFeedLocators.FIRST_ORDER)
 
     def is_order_details_modal_visible(self):
         """Проверяет, что модальное окно с деталями заказа открылось"""
@@ -34,3 +31,11 @@ class OrderFeedPage(BasePage):
     def verification_in_progress_order_number(self, order_number):
         """Получает номер заказа в разделе 'В работе'"""
         return self.wait_for_text_in_element(OrderFeedLocators.IN_PROGRESS_ORDERS, order_number)
+
+    def click_on_order(self, order_number):
+        """Кликает на заказ по его номеру"""
+        self.click(OrderFeedLocators.ORDER_BY_NUMBER(order_number))
+
+    def open_order_feed_page(self):
+        """Открывает главную страницу"""
+        self.open_page(URLs.ORDER_FEED)

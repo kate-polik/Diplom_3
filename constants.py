@@ -4,6 +4,7 @@ class URLs:
     ORDER_HISTORY = BASE_URL + "account/order-history"
     LOGIN_PAGE = BASE_URL + "login"
     INGREDIENT_URL = BASE_URL + "ingredient/61c0c5a71d1f82001bdaaa6c"  # URL страницы ингредиента
+    ORDER_FEED = BASE_URL + "feed"
 
     # API эндпоинты
     REGISTER = BASE_URL + "api/auth/register"

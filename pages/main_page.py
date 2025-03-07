@@ -1,8 +1,8 @@
 from selenium.common import ElementClickInterceptedException
 from selenium.webdriver import ActionChains
+from constants import URLs
 from pages.base_page import BasePage
 from locators.main_page_locators import MainPageLocators
-from locators.ingredient_modal_locators import IngredientModalLocators
 
 
 class MainPage(BasePage):
@@ -24,10 +24,6 @@ class MainPage(BasePage):
         """Кликает по второму ингредиенту"""
         self.click(MainPageLocators.SECOND_INGREDIENT)
 
-    def is_ingredient_modal_closed(self):
-        """Проверяет, что всплывающее окно ингредиента закрылось"""
-        return self.is_element_not_present(IngredientModalLocators.INGREDIENT_MODAL_HEADER)
-
     def drag_ingredient_to_constructor(self):
         """Перетаскивает ингредиент в поле 'Состав заказа'"""
         ingredient = self.find_element(MainPageLocators.SECOND_INGREDIENT)
@@ -45,7 +41,7 @@ class MainPage(BasePage):
 
     def is_order_confirmation_visible(self):
         """Проверяет, что появилось подтверждение заказа"""
-        return self.is_element_visible(MainPageLocators.ORDER_CONFIRMATION_HEADER)
+        return self.is_element_visible(MainPageLocators.ORDER_NUMBER)
 
     def create_order(self):
         """Создает заказ, возвращает его номер"""
@@ -58,8 +54,13 @@ class MainPage(BasePage):
         # Оформляем заказ
         self.click(MainPageLocators.ORDER_BUTTON)
 
+        # Ожидаем обновления номера заказа в модальном окне
+        order_number_element = self.find_element(MainPageLocators.ORDER_NUMBER)
+        old_order_number = order_number_element.text.strip()
+        self.wait_for_text_to_change(MainPageLocators.ORDER_NUMBER, old_order_number)
+
         """Закрывает модальное окно с двойным кликом (на случай ошибки)"""
-        close_button = self.wait_for_element(MainPageLocators.CLOSE_MODAL_BUTTON)
+        close_button = self.find_element(MainPageLocators.CLOSE_MODAL_BUTTON)
         try:
             close_button.click()
         except ElementClickInterceptedException:
@@ -68,3 +69,11 @@ class MainPage(BasePage):
     def create_multiple_orders(self, count):
         """Создает указанное количество заказов и возвращает их номера"""
         return [self.create_order() for _ in range(count)]
+
+    def go_to_login_page(self):
+        """Переходит на страницу 'Личный кабинет'"""
+        self.click(MainPageLocators.PERSONAL_ACCOUNT_BUTTON)
+
+    def open_main_page(self):
+        """Открывает главную страницу"""
+        self.open_page(URLs.BASE_URL)

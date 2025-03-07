@@ -1,10 +1,9 @@
 import pytest
 import allure
 from pages.main_page import MainPage
-from pages.ingredient_modal import IngredientModal
+from pages.ingredient_modal_page import IngredientModal
 from pages.login_page import LoginPage
 from pages.order_feed_page import OrderFeedPage
-from constants import URLs
 
 
 @pytest.mark.usefixtures("driver")
@@ -18,10 +17,10 @@ class TestMainFunctionality:
     def test_navigate_to_constructor(self, driver):
         """Тест: Переход по клику на 'Конструктор'"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Кликаем на 'Личный кабинет'"):
-            main_page = MainPage(driver)
             main_page.go_to_account()
 
         with allure.step("Кликаем 'Конструктор'"):
@@ -37,10 +36,10 @@ class TestMainFunctionality:
     def test_navigate_to_order_feed(self, driver):
         """Тест: Переход по клику на 'Лента заказов'"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Кликаем 'Лента заказов'"):
-            main_page = MainPage(driver)
             main_page.go_to_order_feed()
 
         with allure.step("Проверяем, что перешли в 'Ленту заказов'"):
@@ -53,14 +52,16 @@ class TestMainFunctionality:
     def test_ingredient_modal(self, driver):
         """Тест: если кликнуть на ингредиент, появится всплывающее окно с деталями"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Кликаем на ингредиент"):
-            main_page = MainPage(driver)
             main_page.click_on_second_ingredient()
 
+        ingredient_modal = IngredientModal(driver)
+
         with allure.step("Проверяем, что открылось модальное окно с деталями"):
-            assert driver.current_url == URLs.INGREDIENT_URL, f"Ожидался URL {URLs.INGREDIENT_URL}, но получен {driver.current_url}"
+            assert ingredient_modal.is_ingredient_modal_open(), "Модальное окно ингредиента не открылось"
 
     @allure.story("Закрытие всплывающего окна ингредиента")
     @allure.title("Всплывающее окно ингредиента закрывается по клику на крестик")
@@ -68,10 +69,10 @@ class TestMainFunctionality:
     def test_close_ingredient_modal(self, driver):
         """Тест: всплывающее окно закрывается кликом по крестику"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Открываем ингредиент"):
-            main_page = MainPage(driver)
             main_page.click_on_second_ingredient()
 
         with allure.step("Закрываем модальное окно"):
@@ -79,7 +80,7 @@ class TestMainFunctionality:
             ingredient_modal.close_modal()
 
         with allure.step("Проверяем, что модальное окно закрылось"):
-            assert main_page.is_ingredient_modal_closed(), "Модальное окно ингредиента не закрылось"
+            assert ingredient_modal.is_ingredient_modal_closed(), "Модальное окно ингредиента не закрылось"
 
     @allure.story("Добавление ингредиента в заказ")
     @allure.title("При добавлении ингредиента в заказ увеличивается счетчик")
@@ -87,10 +88,10 @@ class TestMainFunctionality:
     def test_ingredient_counter_increases(self, driver):
         """Тест: при добавлении ингредиента в заказ, увеличивается каунтер данного ингредиента"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Добавляем ингредиент в заказ"):
-            main_page = MainPage(driver)
             main_page.drag_ingredient_to_constructor()
 
         with allure.step("Проверяем, что счетчик увеличился"):
@@ -102,10 +103,10 @@ class TestMainFunctionality:
     def test_logged_in_user_can_place_order(self, driver, test_user):
         """Тест: залогиненный пользователь может оформить заказ"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Переход в 'Личный кабинет' для авторизации"):
-            main_page = MainPage(driver)
             main_page.go_to_account()
 
         with allure.step("Ввод email и пароля"):
@@ -122,3 +123,4 @@ class TestMainFunctionality:
 
         with allure.step("Проверяем, что появилось подтверждение заказа"):
             assert main_page.is_order_confirmation_visible(), "Не появилось подтверждение заказа"
+

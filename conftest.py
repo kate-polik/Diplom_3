@@ -20,12 +20,8 @@ def driver(request):
 def test_user():
     """Создаёт тестового пользователя перед тестом и удаляет его после теста"""
     user = generate_user()
-
     response = APIClient.post(URLs.REGISTER, user)
-    assert response.status_code == 200, f"Ошибка создания тестового пользователя: {response.text}"
-
     token = response.json().get("accessToken")
-    assert token, "Не получен accessToken при регистрации"
 
     # Добавляем email и пароль
     user.update({
@@ -39,11 +35,7 @@ def test_user():
 
     # Удаляем пользователя
     headers = {"Authorization": user["token"]}
-    try:
-        delete_response = APIClient.delete(URLs.USER, headers=headers)
-        assert delete_response.status_code == 202, f"Ошибка удаления тестового пользователя: {delete_response.text}"
-    except Exception as e:
-        print(f"Ошибка при удалении пользователя: {e}")
+    APIClient.delete(URLs.USER, headers=headers)
 
 
 # Хук для очистки allure_results

@@ -1,6 +1,5 @@
 from pages.base_page import BasePage
 from locators.login_page_locators import LoginPageLocators
-from locators.main_page_locators import MainPageLocators
 
 
 class LoginPage(BasePage):
@@ -26,6 +25,5 @@ class LoginPage(BasePage):
         self.click(LoginPageLocators.CONSTRUCTOR_BUTTON)
 
     def go_to_password_recovery(self):
-        """Кликает на кнопку 'Личный кабинет', затем на 'Восстановить пароль'."""
-        self.click(MainPageLocators.PERSONAL_ACCOUNT_BUTTON)
+        """Кликает на кнопку 'Восстановить пароль'"""
         self.click(LoginPageLocators.RECOVER_PASSWORD_BUTTON)

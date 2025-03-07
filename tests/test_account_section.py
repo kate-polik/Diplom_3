@@ -1,6 +1,5 @@
 import pytest
 import allure
-from constants import URLs
 from pages.main_page import MainPage
 from pages.login_page import LoginPage
 from pages.account_page import AccountPage
@@ -17,10 +16,10 @@ class TestAccountSection:
     def test_navigate_to_account(self, driver):
         """Тест: Переход по клику на 'Личный кабинет'"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Кликаем 'Личный кабинет'"):
-            main_page = MainPage(driver)
             main_page.go_to_account()
 
         with allure.step("Проверяем, что открылось окно входа"):
@@ -33,10 +32,10 @@ class TestAccountSection:
     def test_navigate_to_order_history(self, driver, test_user):
         """Тест: Переход в раздел 'История заказов'"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Кликаем 'Личный кабинет'"):
-            main_page = MainPage(driver)
             main_page.go_to_account()
 
         with allure.step("Авторизуемся под тестовым пользователем"):
@@ -53,7 +52,7 @@ class TestAccountSection:
             account_page.go_to_order_history()
 
         with allure.step("Проверяем, что открылась 'История заказов'"):
-            assert driver.current_url == URLs.ORDER_HISTORY, "Не удалось открыть 'Историю заказов'"
+            assert account_page.is_order_history_open(), "Не удалось открыть 'Историю заказов'"
 
     @allure.story("Выход из аккаунта")
     @allure.title("Выход из личного кабинета")
@@ -61,10 +60,10 @@ class TestAccountSection:
     def test_logout(self, driver, test_user):
         """Тест: Выход из аккаунта"""
         with allure.step("Открываем главную страницу"):
-            driver.get(URLs.BASE_URL)
+            main_page = MainPage(driver)
+            main_page.open_main_page()
 
         with allure.step("Кликаем 'Личный кабинет'"):
-            main_page = MainPage(driver)
             main_page.go_to_account()
 
         with allure.step("Авторизуемся под тестовым пользователем"):

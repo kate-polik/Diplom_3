@@ -4,7 +4,6 @@ from pages.main_page import MainPage
 from pages.login_page import LoginPage
 from pages.account_page import AccountPage
 from pages.order_feed_page import OrderFeedPage
-from constants import URLs
 from utils.api_client import APIClient
 
 
@@ -15,17 +14,29 @@ class TestOrderFeed:
 
     @allure.story("Открытие деталей заказа")
     @allure.title("Если кликнуть на заказ, откроется всплывающее окно с деталями")
-    def test_order_details_modal(self, driver):
-        driver.get(URLs.BASE_URL)
+    def test_order_details_modal(self, driver, test_user):
+        with allure.step("Создаём заказ через API"):
+            order_response = APIClient.create_order(test_user["token"])
+
+        assert "order" in order_response and "number" in order_response["order"], (
+            f"Ошибка: в ответе отсутствует номер заказа: {order_response}"
+        )
+
+        order_number = str(order_response["order"]["number"])
+        allure.attach(order_number, name="Номер заказа", attachment_type=allure.attachment_type.TEXT)
+
         main_page = MainPage(driver)
+
+        with allure.step("Открываем главную страницу"):
+            main_page.open_main_page()
 
         with allure.step("Переход в 'Ленту заказов'"):
             main_page.go_to_order_feed()
 
         order_feed_page = OrderFeedPage(driver)
 
-        with allure.step("Кликаем на первый заказ"):
-            order_feed_page.click_on_first_order()
+        with allure.step("Кликаем на созданный заказ"):
+            order_feed_page.click_on_order(order_number)
 
         with allure.step("Проверяем, что модальное окно появилось"):
             assert order_feed_page.is_order_details_modal_visible(), "Модальное окно с деталями заказа не появилось"
@@ -33,8 +44,10 @@ class TestOrderFeed:
     @allure.story("Проверка отображения заказов в истории и ленте")
     @allure.title("Заказы из 'Истории заказов' отображаются в 'Ленте заказов'")
     def test_orders_are_displayed_in_history_and_feed(self, driver, test_user):
-        driver.get(URLs.BASE_URL)  # Открываем главную страницу
         main_page = MainPage(driver)
+
+        with allure.step("Открываем главную страницу"):
+            main_page.open_main_page()
 
         with allure.step("Авторизуемся"):
             main_page.go_to_account()
@@ -71,8 +84,10 @@ class TestOrderFeed:
     @allure.story("Проверка счётчика выполненных заказов")
     @allure.title("Счётчик 'Выполнено за всё время' увеличивается при создании заказа")
     def test_completed_orders_counter_increases(self, driver, test_user):
-        driver.get(URLs.BASE_URL)
         main_page = MainPage(driver)
+
+        with allure.step("Открываем главную страницу"):
+            main_page.open_main_page()
 
         with allure.step("Переход в 'Ленту заказов'"):
             main_page.go_to_order_feed()
@@ -97,8 +112,10 @@ class TestOrderFeed:
     @allure.story("Проверка счётчика выполненных заказов за сегодня")
     @allure.title("Счётчик 'Выполнено за сегодня' увеличивается после создания заказа")
     def test_completed_orders_today_increases(self, driver, test_user):
-        driver.get(URLs.BASE_URL)
         main_page = MainPage(driver)
+
+        with allure.step("Открываем главную страницу"):
+            main_page.open_main_page()
 
         with allure.step("Переход в 'Ленту заказов'"):
             main_page.go_to_order_feed()
@@ -134,11 +151,10 @@ class TestOrderFeed:
         order_number = str(order_response["order"]["number"])
         allure.attach(order_number, name="Номер заказа", attachment_type=allure.attachment_type.TEXT)
 
-        driver.get(URLs.BASE_URL)
-        main_page = MainPage(driver)
+        order_feed_page = OrderFeedPage(driver)
 
-        with allure.step("Переход в 'Ленту заказов'"):
-            main_page.go_to_order_feed()
+        with allure.step("Открываем 'Ленту заказов'"):
+            order_feed_page.open_order_feed_page()
 
         order_feed_page = OrderFeedPage(driver)
 

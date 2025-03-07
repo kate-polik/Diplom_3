@@ -43,12 +43,15 @@ class BasePage:
         except:
             return False
 
-    def wait_for_element(self, locator, timeout=5):
-        """Ожидает появления элемента на странице"""
-        return WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
+    def get_current_url(self):
+        """Возвращает текущий URL"""
+        return self.driver.current_url
 
+    def open_page(self, url):
+        """Открывает страницу по указанному URL"""
+        self.driver.get(url)
 
-
-
+    def wait_for_text_to_change(self, locator, old_text, timeout=10):
+        """Ожидает, пока текст элемента изменится с `old_text`"""
+        WebDriverWait(self.driver, timeout).until(
+            lambda driver: self.find_element(locator).text.strip() != old_text)

@@ -6,7 +6,7 @@ class PasswordRecoveryPage(BasePage):
 
     def wait_for_password_recovery_header(self):
         """Ожидает появления заголовка 'Восстановление пароля'"""
-        return self.wait_for_element(PasswordRecoveryPageLocators.HEADER)
+        return self.find_element(PasswordRecoveryPageLocators.HEADER)
 
     def enter_email(self, email):
         self.enter_text(PasswordRecoveryPageLocators.EMAIL_INPUT, email)
@@ -16,3 +16,7 @@ class PasswordRecoveryPage(BasePage):
 
     def toggle_password_visibility(self):
         self.click(PasswordRecoveryPageLocators.TOGGLE_PASSWORD_VISIBILITY)
+
+    def is_password_input_active(self):
+        """Проверяет, что поле пароля стало активным"""
+        return self.is_element_visible(PasswordRecoveryPageLocators.PASSWORD_INPUT_ACTIVE)
