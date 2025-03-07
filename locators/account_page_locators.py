@@ -1,0 +1,11 @@
+from selenium.webdriver.common.by import By
+
+
+class AccountPageLocators:
+    """Локаторы страницы личного кабинета"""
+
+    ORDER_HISTORY_TAB = (By.LINK_TEXT, "История заказов")
+    LOGOUT_BUTTON = (By.XPATH, "//button[text()='Выход']")
+    ORDER_NUMBERS_LOCATOR_ACCOUNT = (By.CLASS_NAME, "text text_type_digits-default")
+
+
